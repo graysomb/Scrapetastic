@@ -19,7 +19,7 @@ class QVCSpider(scrapy.Spider):
 		for sel in response.xpath('//div[@class="divSeeItems"]'):
 			link = sel.xpath('a/@href').extract()
 			url = response.urljoin(link)
-			request = scrapy.Request(url, self.product_page)
+			request = scrapy.Request(url, self.day_page)
 			yield request
 
 
@@ -31,7 +31,7 @@ class QVCSpider(scrapy.Spider):
 		# 	print item['link']
 
 	#follow links recursively until no unique links exist
-	def prod_page(self,response):
+	def day_page(self,response):
 		links = LinkExtractor(allow=self.allowed_domains, deny=()).extract_links(response)
 		for sel in links:
 			request = scrapy.Request(node['link'], self.follow_the_trail)
