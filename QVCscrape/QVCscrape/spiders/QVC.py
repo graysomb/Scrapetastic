@@ -14,18 +14,16 @@ class QVCSpider(scrapy.Spider):
 
 
 	def parse(self, response):
-
 		for sel in response.xpath('//tr[@class="trHour"]'):
 			startTime = sel.xpath('.//span[@class="dtstart"]/text()').extract()[0]
 			endtime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
 			for link in sel.xpath('.//div[@class="divSeeItems"]/a/@href'):
 				link = link.extract()
 				url = response.urljoin(link)
-				print url
 				if (self.isUnique(url)):
 					self.visited_urls.append(url)
-					# request = scrapy.Request(url, self.day_page)
-					# yield request
+					request = scrapy.Request(url, self.day_page)
+					yield request
 
 		#old stuff
 		# for sel in response.xpath('//div[@class="divSeeItems"]'):
@@ -46,13 +44,15 @@ class QVCSpider(scrapy.Spider):
 
 	#follow day page links
 	def day_page(self,response):
-		daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
+		# daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
+		daySel = response.xpath('//div[@class="divNavItemsRecentlyOnAir"]')
+		if len(daySel)==0:
+			print "bork:"
+			print response.url
 		day = daySel.xpath('text()').extract()
-		print day[0]
 		#save day and send as meta response stuff
 		if len(day)>0:
 			day = day[0]
-			print day
 
 		for sel in response.xpath('//span[@class="fn description"]/a[@class="prodDetailLink url"]'):
 			link = sel.xpath('@href').extract()
