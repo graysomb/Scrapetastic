@@ -8,7 +8,7 @@
 import scrapy
 
 
-class QvcItem(scrapy.Item):
+class QVCItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
