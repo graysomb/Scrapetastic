@@ -44,12 +44,21 @@ class QVCSpider(scrapy.Spider):
 		for sel in response.xpath('//a[@class="prodDetailLink url"]'):
 			link = sel.xpath('@href').extract()
 			url = response.urljoin(link[0])
+			if (self.isUnique(url)):
+				print url
+				self.visited_urls.append(url)
+				request = scrapy.Request(url, self.day_page)
+				yield request
 
 
 
 		# for sel in links:
 		# 	request = scrapy.Request(node['link'], self.follow_the_trail)
 		# 	yield request
+	def product_page(self, response):
+		pass
+
+
 
 	def closed(self, reason):
 		pass
