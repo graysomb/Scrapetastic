@@ -15,14 +15,26 @@ class QVCSpider(scrapy.Spider):
 
 	def parse(self, response):
 
-		#iterate over links
-		for sel in response.xpath('//div[@class="divSeeItems"]'):
-			link = sel.xpath('a/@href').extract()
-			url = response.urljoin(link[0])
-			if (self.isUnique(url)):
-				self.visited_urls.append(url)
-				request = scrapy.Request(url, self.day_page)
-				yield request
+		for sel in response.xpath('//tr[@class="trHour"]'):
+			startTime = sel.xpath('.//span[@class="dtstart"]/text()').extract()[0]
+			endtime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
+			for link in sel.xpath('.//div[@class="divSeeItems"]/a/@href'):
+				link = link.extract()
+				url = response.urljoin(link)
+				print url
+				if (self.isUnique(url)):
+					self.visited_urls.append(url)
+					# request = scrapy.Request(url, self.day_page)
+					# yield request
+
+		#old stuff
+		# for sel in response.xpath('//div[@class="divSeeItems"]'):
+			# link = sel.xpath('a/@href').extract()
+			# url = response.urljoin(link[0])
+			# if (self.isUnique(url)):
+			# 	self.visited_urls.append(url)
+			# 	request = scrapy.Request(url, self.day_page)
+			# 	yield request
 
 
 		# for sel in response.xpath('//@href'):
@@ -34,21 +46,22 @@ class QVCSpider(scrapy.Spider):
 
 	#follow day page links
 	def day_page(self,response):
-		daySel = response.xpath('//option[@value=""]')
+		daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
 		day = daySel.xpath('text()').extract()
-
+		print day[0]
 		#save day and send as meta response stuff
 		if len(day)>0:
 			day = day[0]
+			print day
 
-		for sel in response.xpath('//a[@class="prodDetailLink url"]'):
+		for sel in response.xpath('//span[@class="fn description"]/a[@class="prodDetailLink url"]'):
 			link = sel.xpath('@href').extract()
 			url = response.urljoin(link[0])
 			if (self.isUnique(url)):
-				print url
 				self.visited_urls.append(url)
-				request = scrapy.Request(url, self.day_page)
-				yield request
+				# request.meta['day'] = day
+				# request = scrapy.Request(url, self.product_page)
+				# yield request
 
 
 
@@ -56,7 +69,8 @@ class QVCSpider(scrapy.Spider):
 		# 	request = scrapy.Request(node['link'], self.follow_the_trail)
 		# 	yield request
 	def product_page(self, response):
-		pass
+		response.xpath('//div[@class="itemNo"]')
+
 
 
 
