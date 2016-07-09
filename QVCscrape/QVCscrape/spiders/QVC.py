@@ -3,10 +3,10 @@ import scrapy
 
 from QVCscrape.items import QVCItem
 from scrapy.linkextractors import LinkExtractor
-from igraph import *
-
+from scrapy.utils.response import open_in_browser
 
 class QVCSpider(scrapy.Spider):
+	failed_count = 0
 	visited_urls=[]
 	name = "QVC"
 	allowed_domains = ["qvc.com"]
@@ -44,11 +44,15 @@ class QVCSpider(scrapy.Spider):
 
 	#follow day page links
 	def day_page(self,response):
-		# daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
-		daySel = response.xpath('//div[@class="divNavItemsRecentlyOnAir"]')
+		daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
+		# daySel = response.xpath('//div[@class="divNavItemsRecentlyOnAir"]')
 		if len(daySel)==0:
-			print "bork:"
-			print response.url
+			self.failed_count=self.failed_count +1
+			request = scrapy.Request(response.url, self.day_page)
+			yield request
+			# print "bork:"
+			# print response.url
+			# open_in_browser(response)
 		day = daySel.xpath('text()').extract()
 		#save day and send as meta response stuff
 		if len(day)>0:
@@ -75,6 +79,7 @@ class QVCSpider(scrapy.Spider):
 
 
 	def closed(self, reason):
+		print self.failed_count
 		pass
 		
 	def isUnique(self, url):
