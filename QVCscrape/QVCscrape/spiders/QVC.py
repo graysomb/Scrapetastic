@@ -4,8 +4,11 @@ import scrapy
 from QVCscrape.items import QVCItem
 from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.response import open_in_browser
+import time
 
 class QVCSpider(scrapy.Spider):
+	start=time.clock()
+	end = 0
 	failed_count = 0
 	visited_urls=[]
 	name = "QVC"
@@ -16,13 +19,15 @@ class QVCSpider(scrapy.Spider):
 	def parse(self, response):
 		for sel in response.xpath('//tr[@class="trHour"]'):
 			startTime = sel.xpath('.//span[@class="dtstart"]/text()').extract()[0]
-			endtime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
+			endTime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
 			for link in sel.xpath('.//div[@class="divSeeItems"]/a/@href'):
 				link = link.extract()
 				url = response.urljoin(link)
 				if (self.isUnique(url)):
 					self.visited_urls.append(url)
 					request = scrapy.Request(url, self.day_page)
+					request.meta['startTime'] = startTime
+					request.meta['endTime'] = endTime
 					yield request
 
 		#old stuff
@@ -47,8 +52,7 @@ class QVCSpider(scrapy.Spider):
 		daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
 		# daySel = response.xpath('//div[@class="divNavItemsRecentlyOnAir"]')
 		if len(daySel)==0:
-			self.failed_count=self.failed_count +1
-			request = scrapy.Request(response.url, self.day_page)
+			request = scrapy.Request(response.url, self.day_page,dont_filter=True)
 			yield request
 			# print "bork:"
 			# print response.url
@@ -63,9 +67,11 @@ class QVCSpider(scrapy.Spider):
 			url = response.urljoin(link[0])
 			if (self.isUnique(url)):
 				self.visited_urls.append(url)
-				# request.meta['day'] = day
-				# request = scrapy.Request(url, self.product_page)
-				# yield request
+				request = scrapy.Request(url, self.product_page)
+				request.meta['day'] = day
+				request.meta['startTime'] = response.meta['startTime']
+				request.meta['endTime'] = response.meta['endTime']
+				yield request
 
 
 
@@ -73,13 +79,15 @@ class QVCSpider(scrapy.Spider):
 		# 	request = scrapy.Request(node['link'], self.follow_the_trail)
 		# 	yield request
 	def product_page(self, response):
-		response.xpath('//div[@class="itemNo"]')
+		print response.xpath('//div[@class="itemNo"]/text()').extract()
 
 
 
 
 	def closed(self, reason):
-		print self.failed_count
+		self.end =time.clock()
+		print "time: "
+		print self.end-self.start
 		pass
 		
 	def isUnique(self, url):
