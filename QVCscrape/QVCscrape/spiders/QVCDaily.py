@@ -26,7 +26,7 @@ class QVCDailySpider(scrapy.Spider):
 		if len(sels)!=len(sels2):
 			print "Warning: number of shows and links don't match"
 		for i in range(0,len(sels)-1):
-			request = scrapy.Request(response.url, self.day_page)
+			request = scrapy.Request(response.urljoin(sels[i]), self.day_page)
 			request.meta['show'] = sels2[i].xpath('.//h3/text()').extract()[0]
 			request.meta['day'] = sels2[i].xpath('.//div/text()').extract()[0]
 			request.meta['time'] = sels2[i].xpath('.//div/span/text()').extract()[0]+" - "+sels2[i].xpath('.//div/span/text()').extract()[1]
@@ -87,12 +87,7 @@ class QVCDailySpider(scrapy.Spider):
 
 
 	def closed(self, reason):
-		self.end =time.clock()
-		print "found: "
-		print self.day_count
-		print "followed: "
-		print self.day_visited
-		pass
+		print self.itemCount
 		
 	def isUnique(self, url):
 		for link in self.visited_urls:

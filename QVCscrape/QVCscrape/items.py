@@ -17,8 +17,8 @@ class QVCItem(scrapy.Item):
     number =scrapy.Field()
     url = scrapy.Field()
     day = scrapy.Field()
-    startTime = scrapy.Field()
-    endTime = scrapy.Field()
+    time = scrapy.Field()
     description = scrapy.Field()
     show = scrapy.Field()
+    show_description = scrapy.Field()
     pass
