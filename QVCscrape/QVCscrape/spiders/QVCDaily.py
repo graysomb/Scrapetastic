@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
-from QVCscrape.items import QVCItem
+from QVCscrape.items import QVCDailyItem
 from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.response import open_in_browser
 import time
@@ -53,7 +53,7 @@ class QVCDailySpider(scrapy.Spider):
 		# 	request = scrapy.Request(node['link'], self.follow_the_trail)
 		# 	yield request
 	def product_page(self, response):
-		item = QVCItem()
+		item = QVCDailyItem()
 		item['url'] = response.url
 		item['show'] = response.meta['show']
 		item['show_description'] = response.meta['show_description']
