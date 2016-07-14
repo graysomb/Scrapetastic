@@ -6,40 +6,24 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.response import open_in_browser
 import time
 
-class QVCSpider(scrapy.Spider):
+class QVCDailySpider(scrapy.Spider):
 	RETRY_MAX = 1000
 	retryCount = 0
 	start=time.clock()
 	end = 0
 	visited_urls=[]
 	itemCount = 0
-	name = "QVC"
+	name = "QVCDaily"
 	day_count=0
 	day_visited=0
 	allowed_domains = ["qvc.com"]
-	start_urls = ["http://www.qvc.com/webapp/wcs/stores/servlet/ProgramGuideWeeklyView?storeId=10251&TimeZoneSelect=EST&weekRange=0&channelCode=QVC"]
+	start_urls = ["http://www.qvc.com/webapp/wcs/stores/servlet/ProgramGuideDailyView?storeId=10251&TimeZoneSelect=EST&Navigate=20160713&channelCode=QVC"]
 
 
 	def parse(self, response):
-		for sel in response.xpath('//tr[@class="trHour"]'):
-			startTime = sel.xpath('.//span[@class="dtstart"]/text()').extract()[0]
-			endTime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
-			show = sel.xpath('.//div[@class="divProgramTitle"]/a/text()').extract()
-			if len(show)>0:
-				show = show[0]
-			else:
-				show =""
-			for link in sel.xpath('.//div[@class="divSeeItems"]/a/@href'):
-				link = link.extract()
-				url = response.urljoin(link)
-				if (self.isUnique(url)):
-					self.visited_urls.append(url)
-					self.day_count= self.day_count+1
-					request = scrapy.Request(url, self.day_page)
-					request.meta['startTime'] = startTime
-					request.meta['endTime'] = endTime
-					yield request
-
+		sels = response.xpath('//div[@class="divProgramInformationWrapper"]//div[@class="divSeeItems"]/a/@href').extract()
+		print len(sels)
+		sels2 = response.xpath()
 		#old stuff
 		# for sel in response.xpath('//div[@class="divSeeItems"]'):
 			# link = sel.xpath('a/@href').extract()

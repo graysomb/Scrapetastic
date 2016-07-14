@@ -11,4 +11,13 @@ import scrapy
 class QVCItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    name = scrapy.Field()
+    beforePrice = scrapy.Field()
+    Price = scrapy.Field()
+    number =scrapy.Field()
+    url = scrapy.Field()
+    day = scrapy.Field()
+    startTime = scrapy.Field()
+    endTime = scrapy.Field()
+    description = scrapy.Field()
     pass
