@@ -35,33 +35,16 @@ class QVCDailySpider(scrapy.Spider):
 
 	#follow day page links
 	def day_page(self,response):
-		daySel = response.xpath('//select[@id="selDate"]/option[@selected]')
-		# daySel = response.xpath('//div[@class="divNavItemsRecentlyOnAir"]')
-		if (len(daySel)==0) and (self.retryCount<self.RETRY_MAX):
-			self.retryCount = self.retryCount+1
-			print self.retryCount
-			request = scrapy.Request(response.url, self.day_page,dont_filter=True)
-			request.meta['startTime'] = response.meta['startTime']
-			request.meta['endTime'] = response.meta['endTime']
-			yield request
-			# print "bork:"
-			# print response.url
-			# open_in_browser(response)
-		day = daySel.xpath('text()').extract()
-		#save day and send as meta response stuff
-		if len(day)>0:
-			self.day_visited = self.day_visited+1
-			day = day[0]
-
 		for sel in response.xpath('//span[@class="fn description"]/a[@class="prodDetailLink url"]'):
 			link = sel.xpath('@href').extract()
 			url = response.urljoin(link[0])
 			if (self.isUnique(url)):
 				self.visited_urls.append(url)
 				request = scrapy.Request(url, self.product_page)
-				request.meta['day'] = day
-				request.meta['startTime'] = response.meta['startTime']
-				request.meta['endTime'] = response.meta['endTime']
+				request.meta['show'] = response.meta['show']
+				request.meta['day'] = response.meta['day']
+				request.meta['time'] = response.meta['time']
+				request.meta['show_description'] = response.meta['show_description'] 
 				yield request
 
 
@@ -72,9 +55,10 @@ class QVCDailySpider(scrapy.Spider):
 	def product_page(self, response):
 		item = QVCItem()
 		item['url'] = response.url
+		item['show'] = response.meta['show']
+		item['show_description'] = response.meta['show_description']
 		item['day'] = response.meta['day']
-		item['startTime'] = response.meta['startTime']
-		item['endTime'] = response.meta['endTime']
+		item['time'] = response.meta['time']
 
 		itemNumber=response.xpath('//div[@class="itemNo"]/text()').extract()
 		if len(itemNumber)>0:

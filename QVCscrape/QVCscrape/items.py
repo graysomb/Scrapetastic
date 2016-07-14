@@ -20,4 +20,5 @@ class QVCItem(scrapy.Item):
     startTime = scrapy.Field()
     endTime = scrapy.Field()
     description = scrapy.Field()
+    show = scrapy.Field()
     pass
