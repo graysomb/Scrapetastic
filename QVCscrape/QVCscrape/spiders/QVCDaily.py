@@ -23,7 +23,8 @@ class QVCDailySpider(scrapy.Spider):
 	def parse(self, response):
 		sels = response.xpath('//div[@class="divProgramInformationWrapper"]//div[@class="divSeeItems"]/a/@href').extract()
 		print len(sels)
-		sels2 = response.xpath()
+		sels2 = response.xpath('//div[@class="divProgramDetailsInformation"]').extract()
+		print len(sels2)
 		#old stuff
 		# for sel in response.xpath('//div[@class="divSeeItems"]'):
 			# link = sel.xpath('a/@href').extract()
