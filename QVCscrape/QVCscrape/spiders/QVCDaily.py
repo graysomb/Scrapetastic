@@ -22,25 +22,16 @@ class QVCDailySpider(scrapy.Spider):
 
 	def parse(self, response):
 		sels = response.xpath('//div[@class="divProgramInformationWrapper"]//div[@class="divSeeItems"]/a/@href').extract()
-		print len(sels)
-		sels2 = response.xpath('//div[@class="divProgramDetailsInformation"]').extract()
-		print len(sels2)
-		#old stuff
-		# for sel in response.xpath('//div[@class="divSeeItems"]'):
-			# link = sel.xpath('a/@href').extract()
-			# url = response.urljoin(link[0])
-			# if (self.isUnique(url)):
-			# 	self.visited_urls.append(url)
-			# 	request = scrapy.Request(url, self.day_page)
-			# 	yield request
-
-
-		# for sel in response.xpath('//@href'):
-		# 	item = DmozItem()
-		# 	item['title'] = sel.xpath('a/text()').extract()
-		# 	item['link']=link = sel.xpath('a/@href').extract()
-		# 	item['desc'] = sel.xpath('text()').extract()
-		# 	print item['link']
+		sels2 = response.xpath('//div[@class="divProgramDetailsInformation"]')
+		if len(sels)!=len(sels2):
+			print "Warning: number of shows and links don't match"
+		for i in range(0,len(sels)-1):
+			request = scrapy.Request(response.url, self.day_page)
+			request.meta['show'] = sels2[i].xpath('.//h3/text()').extract()[0]
+			request.meta['day'] = sels2[i].xpath('.//div/text()').extract()[0]
+			request.meta['time'] = sels2[i].xpath('.//div/span/text()').extract()[0]+" - "+sels2[i].xpath('.//div/span/text()').extract()[1]
+			request.meta['show_description'] = sels2[i].xpath('.//span[@class="summary"]').extract()[0]
+			yield request
 
 	#follow day page links
 	def day_page(self,response):

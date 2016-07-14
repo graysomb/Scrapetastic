@@ -24,6 +24,7 @@ class QVCSpider(scrapy.Spider):
 		for sel in response.xpath('//tr[@class="trHour"]'):
 			startTime = sel.xpath('.//span[@class="dtstart"]/text()').extract()[0]
 			endTime = sel.xpath('.//span[@class="dtend"]/text()').extract()[0]
+			#show isnt saved
 			show = sel.xpath('.//div[@class="divProgramTitle"]/a/text()').extract()
 			if len(show)>0:
 				show = show[0]
