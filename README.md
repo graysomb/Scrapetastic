@@ -8,6 +8,7 @@ sudo pip install scrapy
 sudo pip install selenium
 sudo apt-get install xvfb
 sudo pip install pyvirtualdisplay
+sudo apt-get install xserver-xephyr
 
 add the Scraptastic folder to path, unless selenium now supports firefox 47 drivers
 
