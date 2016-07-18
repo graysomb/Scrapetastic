@@ -42,19 +42,30 @@ class QVCUKSpider(scrapy.Spider):
 				request = scrapy.Request(link.get_attribute("href"), self.parse_shows, dont_filter=True)
 				request.meta['show'] = link.text
 				request.meta['time'] = self.driver.find_elements_by_xpath('//li/span[@class="showTime"]')[j].text
+				request.meta['day'] = self.driver.find_element_by_id('firstItemsRecentlyOnAirH').text
 				j = j+1
 				yield request
 
-
-		# url = "http://www.qvcuk.com/ItemsRecentlyOnAirView"
-		# request = scrapy.Request(url, self.parse2, dont_filter=True)
-		# yield request
 	#follow day page links
 	def parse_shows(self,response):
-		print response.url
-		print "show: " + response.meta['show']
-		print "time: " + response.meta['time']
+		for sel in response.xpath('//a[@class="prodDetailLink"]/@href'):
+			request = scrapy.Request(sel.extract(), self.parse_products)
+			request.meta['show'] = response.meta['show']
+			request.meta['time'] = response.meta['time']
+			request.meta['day'] = response.meta['day']
+			yield request
 
+	def parse_products(self, response):
+		item = QVCUKItem()
+		item['url'] = response.url
+		item['time'] = response.meta['time']
+		item['show'] = response.meta['show']
+		item['day'] = response.meta['day']
+		item['number'] = response.xpath('//div[@class="itemNo"]/text()').extract()[0]
+		item['name'] = response.xpath('//div[@class="pdShortDesc"]/div/h1/text()').extract()[0]
+		item['Price'] = response.xpath('//div[@class="qvcPrice"]/span/text()').extract()[0]
+		item['description'] = response.xpath('//div[@class="accordionText"]/text()').extract()[0]
+		yield item
 
 	def closed(self, reason):
 		print self.itemCount
