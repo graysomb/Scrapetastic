@@ -21,6 +21,14 @@ in general
 ```
 scrapy crawl SpiderName
 ```
+to test out xpath selectors on a website
+```
+scrapy shell someHtmlLink.com
+```
+then 
+```
+>>> response.xpath('some selectors')
+```
 ### some docs:
 http://doc.scrapy.org/en/latest/
 
