@@ -35,14 +35,14 @@ class QVCUKSpider(scrapy.Spider):
 		for i in range(1, numOpts):
 			self.driver.execute_script('document.getElementById("selDate").options.selectedIndex = '+str(i)+'; document.getElementById("selDate").onchange();')
 			time.sleep(2)
-			links = self.driver.find_element_by_xpath('//li/span[@class="showTime"]/a')
-			i=0
+			links = self.driver.find_elements_by_xpath('//ul[@class="noCheckBox"]/li/a')
+			j=0
 			for link in links:
 				print link.get_attribute("href")
 				request = scrapy.Request(link.get_attribute("href"), self.parse_shows, dont_filter=True)
 				request.meta['show'] = link.text
-				request.meta['time'] = self.driver.find_element_by_xpath('//li/span[@class="showTime"]['+str(i)+']')
-				i = i+1
+				request.meta['time'] = self.driver.find_elements_by_xpath('//li/span[@class="showTime"]')[j].text
+				j = j+1
 				yield request
 
 
@@ -52,8 +52,8 @@ class QVCUKSpider(scrapy.Spider):
 	#follow day page links
 	def parse_shows(self,response):
 		print response.url
-		print response.meta['show']
-		print response.meta['time']
+		print "show: " + response.meta['show']
+		print "time: " + response.meta['time']
 
 
 	def closed(self, reason):
