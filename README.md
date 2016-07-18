@@ -14,3 +14,13 @@ add the Scraptastic folder to path, unless selenium now supports firefox 47 driv
 
 to run navigate to QVCscrape
 scrapy crawl QVC
+
+in general 
+
+scrapy crawl SpiderName
+
+
+some docs:
+http://doc.scrapy.org/en/latest/
+http://selenium-python.readthedocs.io/getting-started.html
+

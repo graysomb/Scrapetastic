@@ -35,18 +35,25 @@ class QVCUKSpider(scrapy.Spider):
 		for i in range(1, numOpts):
 			self.driver.execute_script('document.getElementById("selDate").options.selectedIndex = '+str(i)+'; document.getElementById("selDate").onchange();')
 			time.sleep(2)
-			print "element: "
-			print self.driver.find_element_by_id("firstItemsRecentlyOnAirH").text
-			links = self.driver.find_elements_by_class_name("prodDetailLink")
+			links = self.driver.find_element_by_xpath('//li/span[@class="showTime"]/a')
+			i=0
 			for link in links:
 				print link.get_attribute("href")
+				request = scrapy.Request(link.get_attribute("href"), self.parse_shows, dont_filter=True)
+				request.meta['show'] = link.text
+				request.meta['time'] = self.driver.find_element_by_xpath('//li/span[@class="showTime"]['+str(i)+']')
+				i = i+1
+				yield request
+
 
 		# url = "http://www.qvcuk.com/ItemsRecentlyOnAirView"
 		# request = scrapy.Request(url, self.parse2, dont_filter=True)
 		# yield request
 	#follow day page links
-	def parse2(self,response):
-		open_in_browser(response)
+	def parse_shows(self,response):
+		print response.url
+		print response.meta['show']
+		print response.meta['time']
 
 
 	def closed(self, reason):
