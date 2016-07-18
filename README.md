@@ -12,7 +12,8 @@ sudo apt-get install xserver-xephyr
 ```
 add the Scraptastic folder to path, unless selenium now supports firefox 47 drivers
 
-###to run navigate to QVCscrape
+###to run 
+navigate to QVCscrape and do
 ```
 scrapy crawl QVC
 ```
