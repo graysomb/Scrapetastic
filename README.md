@@ -1,7 +1,7 @@
 # Scrapetastic
 website scraper that currently uses scrapy to navigate through html code and requests to obtain useful information. selenium is used for clicking or injecting javascript. currently they can only interact by selenium passing scrapy href links.
 
-### to install 
+### to install (assuming you have python 2.7)
 ```
 sudo apt-get install python-dev python-pip libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev
 sudo pip install scrapy
