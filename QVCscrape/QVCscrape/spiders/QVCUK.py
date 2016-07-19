@@ -72,9 +72,3 @@ class QVCUKSpider(scrapy.Spider):
 		self.driver.close()
 		self.display.stop()
 
-	def isUnique(self, url):
-		for link in self.visited_urls:
-			if link == url:
-				return False
-		return True
-
