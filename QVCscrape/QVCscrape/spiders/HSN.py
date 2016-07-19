@@ -5,7 +5,7 @@ from QVCscrape.items import QVCDailyItem
 from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.response import open_in_browser
 import time
-
+#this is currently daily
 class HSNSpider(scrapy.Spider):
 	visited_urls=[]
 	itemCount = 0
@@ -13,43 +13,42 @@ class HSNSpider(scrapy.Spider):
 	day_count=0
 	day_visited=0
 	allowed_domains = ["hsn.com"]
-	start_urls = ["http://www.hsn.com/watch/program-guide?disp=1"]
+	start_urls = ["http://www.hsn.com/watch/program-guide"]
 
 
 	def parse(self, response):
-		sel = response.xpath('//div[@class="show-detail-container"]')
-		for link in sel:
-			url = response.xpath('/div[@class="shop-more-items"]/@href').extract()[0]
+		selurl = response.xpath('//div[@class="cell shop"]')
+		selshows = response.xpath('//div[@class="cell show"]/span/text()')
+		seltimes = response.xpath('//div[@class="cell time "]/div/text()')
+		if len(selurl) != len(selshows) or len(selshows) != len(seltimes) or len(selurl) != len(seltimes):
+			print "Warning: mismatched links and data"
+		for i in range(0,len(selurl)-1):
+			url = selurl[i].xpath('./a/@href').extract()[0]
+			print url
 			request = scrapy.Request(response.urljoin(url), self.parse_show)
-			request.meta['show'] = response.xpath('/div[@class="show-detail-header"]/span/text()').extract()[0]
-			timeInfo = response.xpanth('.//div[@class="date-card"]/div/text()').extract()
-			request.meta['day']  = timeInfo[0] + " "+timeInfo[1]
-			request.meta['time'] = timeInfo[3]
-			request.meta['show_description'] = response.xpath('/div[@class="show-detail-header"]/span/text()').extract()[1]
+			request.meta['show'] = selshows[i].extract()
+			request.meta['day']  = response.xpath('//select[@class="date"]/option[@selected]/text()').extract()[0]
+			request.meta['time'] = seltimes.extract()[0]
 			yield request
 
 	#follow day page links
 	def parse_show(self,response):
-		if len(response.xpath('//div[@class="info"]/a/@href'))==0:
+		if len(response.xpath('//div[@class="info "]/h3/a/@href'))==0:
 			print "Warning: no items"
-		for sel in response.xpath('//div[@class="info"]/a/@href'):
+		for sel in response.xpath('//div[@class="info "]/h3/a/@href'):
 			link = sel.extract()
-			url = response.urljoin(link[0])
-			if (self.isUnique(url)):
-				self.visited_urls.append(url)
-				request = scrapy.Request(url, self.parse_product)
-				request.meta['show'] = response.meta['show']
-				request.meta['day'] = response.meta['day']
-				request.meta['time'] = response.meta['time']
-				request.meta['show_description'] = response.meta['show_description'] 
-				yield request
+			url = response.urljoin(link)
+			request = scrapy.Request(url, self.parse_product)
+			request.meta['show'] = response.meta['show']
+			request.meta['day'] = response.meta['day']
+			request.meta['time'] = response.meta['time']
+			yield request
 
 
 	def parse_product(self, response):
 		item = QVCDailyItem()
 		item['url'] = response.url
 		item['show'] = response.meta['show']
-		item['show_description'] = response.meta['show_description']
 		item['day'] = response.meta['day']
 		item['time'] = response.meta['time']
 
@@ -65,7 +64,7 @@ class HSNSpider(scrapy.Spider):
 		itemPrice =response.xpath('//span[@class="product-price"]/text()').extract()
 		if len(itemPrice)>0:
 			item['Price']= itemPrice[0]
-		itemDescription = response.xpath('//div[@class="content copy"]/div/text()').extract()
+		itemDescription =response.xpath('//div[@class="content copy"]/div/text()').extract()
 		if len(itemDescription)>0:
 			item['description'] = itemDescription[0]
 
