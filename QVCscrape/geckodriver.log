@@ -11818,3 +11818,18 @@ JavaScript warning: http://www.qvcuk.com/wcsstore/UK/content/javascript/commons.
 
 (firefox:27347): Gdk-WARNING **: firefox: Fatal IO error 11 (Resource temporarily unavailable) on X server :1021.
 
+1468875871528	addons.manager	INFO	Skipping background update check
+1468876111541	DeferredSave.extensions.json	DEBUG	Save changes
+1468876111542	DeferredSave.extensions.json	DEBUG	Starting timer
+1468876111565	DeferredSave.extensions.json	DEBUG	Starting write
+1468876111584	DeferredSave.extensions.json	DEBUG	Write succeeded
+1468876578972	addons.manager	INFO	Skipping background update check
+1468876741232	addons.manager	INFO	Skipping background update check
+1468876818984	DeferredSave.extensions.json	DEBUG	Save changes
+1468876818985	DeferredSave.extensions.json	DEBUG	Starting timer
+1468876819008	DeferredSave.extensions.json	DEBUG	Starting write
+1468876819025	DeferredSave.extensions.json	DEBUG	Write succeeded
+1468876981238	DeferredSave.extensions.json	DEBUG	Save changes
+1468876981239	DeferredSave.extensions.json	DEBUG	Starting timer
+1468876981260	DeferredSave.extensions.json	DEBUG	Starting write
+1468876981275	DeferredSave.extensions.json	DEBUG	Write succeeded
