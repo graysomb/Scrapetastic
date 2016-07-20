@@ -5,6 +5,11 @@ from QVCscrape.items import QVCDailyItem
 from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.response import open_in_browser
 import time
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from pyvirtualdisplay import Display
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.action_chains import ActionChains
 #this is currently daily
 class HSNSpider(scrapy.Spider):
 	visited_urls=[]
@@ -15,8 +20,27 @@ class HSNSpider(scrapy.Spider):
 	allowed_domains = ["hsn.com"]
 	start_urls = ["http://www.hsn.com/watch/program-guide"]
 
+	def __init__(self):
+		self.display = Display(visible=1, size=(1024, 768))
+		self.display.start()
+		# firefox_capabilities = DesiredCapabilities.FIREFOX
+		# firefox_capabilities['marionette'] = True
+		# self.driver = webdriver.Firefox(capabilities=firefox_capabilities)
+		self.driver = webdriver.Chrome()
 
-	def parse(self, response):
+	def parse(self,response):
+		self.driver.get(response.url)
+		# time.sleep(5)
+		target = self.driver.find_element_by_xpath('//select[@id="change-date"]')
+		options = self.driver.find_elements_by_xpath('//select[@id="change-date"]/option')
+		target.click()
+		time.sleep(1)
+		options[0].click()
+		# ActionChains(self.driver).click_and_hold(target).click(options[0]).perform()
+		# options[0].send_keys(Keys.RETURN)
+		time.sleep(5)
+
+	def parse2(self, response):
 		selurl = response.xpath('//div[@class="cell shop"]')
 		selshows = response.xpath('//div[@class="cell show"]/span/text()')
 		seltimes = response.xpath('//div[@class="cell time "]/div/text()')
@@ -72,13 +96,10 @@ class HSNSpider(scrapy.Spider):
 		yield item
 
 
-
-
-
-
-
 	def closed(self, reason):
 		print self.itemCount
+		self.driver.close()
+		self.display.stop()
 		
 	def isUnique(self, url):
 		for link in self.visited_urls:
