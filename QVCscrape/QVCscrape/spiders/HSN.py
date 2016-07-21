@@ -30,30 +30,24 @@ class HSNSpider(scrapy.Spider):
 
 	def parse(self,response):
 		self.driver.get(response.url)
-		# time.sleep(5)
 		target = self.driver.find_element_by_xpath('//select[@id="change-date"]')
 		options = self.driver.find_elements_by_xpath('//select[@id="change-date"]/option')
-		target.click()
-		time.sleep(1)
-		options[0].click()
-		# ActionChains(self.driver).click_and_hold(target).click(options[0]).perform()
-		# options[0].send_keys(Keys.RETURN)
-		time.sleep(5)
+		for option in options:
+			target.click()
+			time.sleep(.5)
+			option.click()
+			time.sleep(1)
+			selurl = self.driver.find_elements_by_xpath('//div[@class="cell shop"]/a')
+			selshows = self.driver.find_elements_by_xpath('//div[@class="cell show"]/span')
+			seltimes = self.driver.find_elements_by_xpath('//div[@class="cell time "]/div')
+			for i in range(0,len(selurl)-1):
+				url = selurl[i].get_attribute("href")
+				request = scrapy.Request(response.urljoin(url), self.parse_show)
+				request.meta['show'] = selshows[i].text
+				request.meta['day']  = self.driver.find_element_by_xpath('//select[@class="date"]/option[@selected]').text
+				request.meta['time'] = seltimes[i].text
+				yield request
 
-	def parse2(self, response):
-		selurl = response.xpath('//div[@class="cell shop"]')
-		selshows = response.xpath('//div[@class="cell show"]/span/text()')
-		seltimes = response.xpath('//div[@class="cell time "]/div/text()')
-		if len(selurl) != len(selshows) or len(selshows) != len(seltimes) or len(selurl) != len(seltimes):
-			print "Warning: mismatched links and data"
-		for i in range(0,len(selurl)-1):
-			url = selurl[i].xpath('./a/@href').extract()[0]
-			print url
-			request = scrapy.Request(response.urljoin(url), self.parse_show)
-			request.meta['show'] = selshows[i].extract()
-			request.meta['day']  = response.xpath('//select[@class="date"]/option[@selected]/text()').extract()[0]
-			request.meta['time'] = seltimes.extract()[0]
-			yield request
 
 	#follow day page links
 	def parse_show(self,response):
