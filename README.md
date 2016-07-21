@@ -10,8 +10,10 @@ sudo apt-get install xvfb
 sudo pip install pyvirtualdisplay
 sudo apt-get install xserver-xephyr
 ```
-add the Scraptastic folder to path, unless selenium now supports firefox 47 drivers
-
+add the Scraptastic folder to path, this is so selenium can find the "wires" binary and "chromedriver" binary
+```
+export PATH=~/Code/Scrapetastic:$PATH
+```
 ###to run 
 navigate to QVCscrape and do
 ```
@@ -23,7 +25,7 @@ scrapy crawl SpiderName
 ```
 to test out xpath selectors on a website
 ```
-scrapy shell someHtmlLink.com
+scrapy shell "someHtmlLink.com"
 ```
 then 
 ```
