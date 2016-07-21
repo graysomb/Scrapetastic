@@ -71,7 +71,6 @@ class QVCDailySpider(scrapy.Spider):
 		self.itemCount = self.itemCount+1
 		yield item
 
-
 	def closed(self, reason):
 		print self.itemCount
 		
