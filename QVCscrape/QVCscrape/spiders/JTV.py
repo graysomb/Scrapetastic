@@ -24,7 +24,6 @@ class QVCDailySpider(scrapy.Spider):
 			url = sel.xpath('./tr/td/a/@href').extract()[0]
 			request = scrapy.Request(response.urljoin(url), self.parse_show)
 			request.meta['day'] = day
-			# print response.urljoin(url)
 			yield request
 
 
@@ -71,11 +70,6 @@ class QVCDailySpider(scrapy.Spider):
 
 		self.itemCount = self.itemCount+1
 		yield item
-
-
-
-
-
 
 
 	def closed(self, reason):
